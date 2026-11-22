@@ -1,5 +1,17 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const CHAVE_STORAGE = 'sarue_livros_dados_v1';
+document.addEventListener('DOMContentLoaded', async () => {
+  // =========================================================
+  // CONFIGURAÇÃO SIMPLES DA NUVEM (SUPABASE)
+  // =========================================================
+  const SUPABASE_URL = 'https://gxocqxjllvwsvzvekole.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_GvbaMG9S3IwZq_5nt9WEmA_gq1IuF8s';
+  const REGISTRO_ID = 'principal';
+  const CHAVE_BACKUP_LOCAL = 'sarue_livros_backup_v1';
+
+  const nuvemConfigurada =
+    SUPABASE_URL.startsWith('https://') &&
+    !SUPABASE_URL.includes('COLE_AQUI') &&
+    SUPABASE_ANON_KEY.length > 15 &&
+    !SUPABASE_ANON_KEY.includes('COLE_AQUI');
 
   // Dados iniciais solicitados (todas as tarefas começam como "para-fazer")
   const estadoInicial = {
@@ -51,8 +63,9 @@ document.addEventListener('DOMContentLoaded', () => {
     ]
   };
 
-  let estado = carregarEstado();
+  let estado = clonar(estadoInicial);
   let filtroAtual = 'todas';
+  let timerSalvar = null;
 
   // Referências do DOM
   const sloganEl = document.getElementById('slogan-editora');
@@ -62,32 +75,130 @@ document.addEventListener('DOMContentLoaded', () => {
   const secoesAba = document.querySelectorAll('.secao-aba');
   const botoesFiltro = document.querySelectorAll('.filtro-btn');
   const btnAdicionarObra = document.getElementById('btn-adicionar-obra');
+  const rodapeTextoEl = document.querySelector('.rodape p');
 
-  function carregarEstado() {
-    try {
-      const salvo = localStorage.getItem(CHAVE_STORAGE);
-      if (salvo) {
-        return JSON.parse(salvo);
-      }
-    } catch (erro) {
-      console.warn('Não foi possível ler o localStorage:', erro);
-    }
-    return JSON.parse(JSON.stringify(estadoInicial));
+  function clonar(obj) {
+    return JSON.parse(JSON.stringify(obj));
   }
 
-  function salvarEstado() {
-    try {
-      localStorage.setItem(CHAVE_STORAGE, JSON.stringify(estado));
-    } catch (erro) {
-      console.warn('Não foi possível salvar no localStorage:', erro);
+  function atualizarRodape(mensagem) {
+    if (rodapeTextoEl) {
+      rodapeTextoEl.textContent = mensagem;
     }
+  }
+
+  function salvarBackupLocal() {
+    try {
+      localStorage.setItem(CHAVE_BACKUP_LOCAL, JSON.stringify(estado));
+    } catch (erro) {
+      console.warn('Backup local indisponível:', erro);
+    }
+  }
+
+  function carregarBackupLocal() {
+    try {
+      const salvo = localStorage.getItem(CHAVE_BACKUP_LOCAL);
+      if (salvo) {
+        const parsed = JSON.parse(salvo);
+        if (parsed && Array.isArray(parsed.colunas)) {
+          return parsed;
+        }
+      }
+    } catch (erro) {
+      console.warn('Erro ao ler backup local:', erro);
+    }
+    return null;
+  }
+
+  async function carregarEstadoDaNuvem() {
+    if (!nuvemConfigurada) {
+      const local = carregarBackupLocal();
+      if (local) estado = local;
+      atualizarRodape('Saruê Livros • Modo local (cole sua chave do Supabase no js/script.js para sincronizar a equipe)');
+      return;
+    }
+
+    atualizarRodape('Saruê Livros • Sincronizando com a nuvem...');
+
+    try {
+      const endpoint = `${SUPABASE_URL}/rest/v1/sarue_workspace?id=eq.${encodeURIComponent(REGISTRO_ID)}&select=dados`;
+      const resposta = await fetch(endpoint, {
+        headers: {
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${SUPABASE_ANON_KEY}`
+        }
+      });
+
+      if (!resposta.ok) {
+        throw new Error(`HTTP ${resposta.status}`);
+      }
+
+      const linhas = await resposta.json();
+      const dadosNuvem = linhas?.[0]?.dados;
+
+      if (dadosNuvem && Array.isArray(dadosNuvem.colunas) && dadosNuvem.colunas.length > 0) {
+        estado = dadosNuvem;
+        salvarBackupLocal();
+      } else {
+        await enviarEstadoParaNuvem();
+      }
+
+      atualizarRodape('Saruê Livros • Conectado à nuvem (todos veem as alterações)');
+    } catch (erro) {
+      console.warn('Falha ao carregar da nuvem, usando backup local:', erro);
+      const local = carregarBackupLocal();
+      if (local) estado = local;
+      atualizarRodape('Saruê Livros • Sem conexão com a nuvem no momento (exibindo cópia local)');
+    }
+  }
+
+  async function enviarEstadoParaNuvem() {
+    salvarBackupLocal();
+
+    if (!nuvemConfigurada) return;
+
+    try {
+      const endpoint = `${SUPABASE_URL}/rest/v1/sarue_workspace?id=eq.${encodeURIComponent(REGISTRO_ID)}`;
+      const resposta = await fetch(endpoint, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+          Prefer: 'return=minimal'
+        },
+        body: JSON.stringify({
+          dados: estado,
+          atualizado_em: new Date().toISOString()
+        })
+      });
+
+      if (!resposta.ok) {
+        throw new Error(`HTTP ${resposta.status}`);
+      }
+
+      atualizarRodape('Saruê Livros • Alterações salvas na nuvem para toda a equipe');
+    } catch (erro) {
+      console.warn('Erro ao salvar na nuvem:', erro);
+      atualizarRodape('Saruê Livros • Salvo localmente; falha ao enviar para a nuvem');
+    }
+  }
+
+  function agendarSalvamento() {
+    salvarBackupLocal();
+    if (!nuvemConfigurada) return;
+
+    atualizarRodape('Saruê Livros • Salvando alterações...');
+    clearTimeout(timerSalvar);
+    timerSalvar = setTimeout(() => {
+      enviarEstadoParaNuvem();
+    }, 450);
   }
 
   // Slogan editável no cabeçalho
-  sloganEl.textContent = estado.slogan;
   sloganEl.addEventListener('input', () => {
     estado.slogan = sloganEl.textContent.trim() || 'Espaço reservado para o slogan da Saruê Livros...';
-    salvarEstado();
+    agendarSalvamento();
   });
 
   // Navegação entre abas ("Tarefas da Equipe" e "Obras a serem avaliadas")
@@ -170,20 +281,18 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
           `;
 
-          // Troca de status
           li.querySelectorAll('.status-btn').forEach((btnStatus) => {
             btnStatus.addEventListener('click', () => {
               tarefa.status = btnStatus.dataset.status;
-              salvarEstado();
               renderizarColunas();
+              agendarSalvamento();
             });
           });
 
-          // Remover tarefa
           li.querySelector('.tarefa-item__remover').addEventListener('click', () => {
             coluna.tarefas = coluna.tarefas.filter((t) => t.id !== tarefa.id);
-            salvarEstado();
             renderizarColunas();
+            agendarSalvamento();
           });
 
           ul.appendChild(li);
@@ -192,7 +301,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
       article.appendChild(ul);
 
-      // Formulário para adicionar novas tarefas na coluna
       const form = document.createElement('form');
       form.className = 'form-nova-tarefa';
       form.innerHTML = `
@@ -218,8 +326,8 @@ document.addEventListener('DOMContentLoaded', () => {
           status: 'para-fazer'
         });
 
-        salvarEstado();
         renderizarColunas();
+        agendarSalvamento();
       });
 
       article.appendChild(form);
@@ -291,12 +399,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
       inputTitulo.addEventListener('input', () => {
         obra.titulo = inputTitulo.value;
-        salvarEstado();
+        agendarSalvamento();
       });
 
       inputCurador.addEventListener('input', () => {
         obra.curador = inputCurador.value;
-        salvarEstado();
+        agendarSalvamento();
       });
 
       inputLink.addEventListener('input', () => {
@@ -309,24 +417,24 @@ document.addEventListener('DOMContentLoaded', () => {
           linkAbrir.href = '#';
           linkAbrir.classList.add('btn-abrir-obra--desabilitado');
         }
-        salvarEstado();
+        agendarSalvamento();
       });
 
       txtSinopse.addEventListener('input', () => {
         obra.sinopse = txtSinopse.value;
-        salvarEstado();
+        agendarSalvamento();
       });
 
       txtComentarios.addEventListener('input', () => {
         obra.comentarios = txtComentarios.value;
-        salvarEstado();
+        agendarSalvamento();
       });
 
       if (btnExcluir) {
         btnExcluir.addEventListener('click', () => {
           estado.obras = estado.obras.filter((item) => item.id !== obra.id);
-          salvarEstado();
           renderizarObras();
+          agendarSalvamento();
         });
       }
 
@@ -334,7 +442,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Botão "Adicionar obra"
   btnAdicionarObra.addEventListener('click', () => {
     estado.obras.push({
       id: `obra-${Date.now()}-${Math.random().toString(16).slice(2, 6)}`,
@@ -344,8 +451,8 @@ document.addEventListener('DOMContentLoaded', () => {
       curador: '',
       comentarios: ''
     });
-    salvarEstado();
     renderizarObras();
+    agendarSalvamento();
   });
 
   function normalizarUrl(valor) {
@@ -370,6 +477,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Inicialização da página
+  await carregarEstadoDaNuvem();
+  sloganEl.textContent = estado.slogan;
   renderizarColunas();
   renderizarObras();
 });
