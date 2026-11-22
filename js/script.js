@@ -110,6 +110,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     return null;
   }
 
+  function montarHeadersSupabase(incluirJson = false) {
+    const headers = {
+      apikey: SUPABASE_ANON_KEY
+    };
+
+    if (SUPABASE_ANON_KEY.startsWith('eyJ')) {
+      headers.Authorization = `Bearer ${SUPABASE_ANON_KEY}`;
+    }
+
+    if (incluirJson) {
+      headers['Content-Type'] = 'application/json';
+      headers.Prefer = 'return=minimal';
+    }
+
+    return headers;
+  }
+
   async function carregarEstadoDaNuvem() {
     if (!nuvemConfigurada) {
       const local = carregarBackupLocal();
@@ -123,10 +140,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
       const endpoint = `${SUPABASE_URL}/rest/v1/sarue_workspace?id=eq.${encodeURIComponent(REGISTRO_ID)}&select=dados`;
       const resposta = await fetch(endpoint, {
-        headers: {
-          apikey: SUPABASE_ANON_KEY,
-          Authorization: `Bearer ${SUPABASE_ANON_KEY}`
-        }
+        headers: montarHeadersSupabase(false)
       });
 
       if (!resposta.ok) {
@@ -161,12 +175,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const endpoint = `${SUPABASE_URL}/rest/v1/sarue_workspace?id=eq.${encodeURIComponent(REGISTRO_ID)}`;
       const resposta = await fetch(endpoint, {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          apikey: SUPABASE_ANON_KEY,
-          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-          Prefer: 'return=minimal'
-        },
+        headers: montarHeadersSupabase(true),
         body: JSON.stringify({
           dados: estado,
           atualizado_em: new Date().toISOString()
