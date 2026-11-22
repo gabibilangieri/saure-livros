@@ -1,0 +1,615 @@
+/* =========================================================
+   BASE E IDENTIDADE VISUAL - SARUÊ LIVROS
+   ========================================================= */
+:root {
+  --cor-fundo-base: #361326;
+  --cor-texto-destaque: #F59E0B;
+  --cor-acento-rosa: #E11D48;
+  --cor-bloco-claro: #FAF7F2;
+  --cor-bloco-rosado: #FFF1F2;
+  --cor-texto-escuro: #24131D;
+  --cor-texto-suave: #5E4352;
+  --cor-borda-papel: #E5D8CE;
+
+  /* Cores das caixinhas de status */
+  --status-fazer: #E11D48;     /* Vermelho */
+  --status-andamento: #F59E0B; /* Amarelo */
+  --status-concluida: #16A34A; /* Verde */
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--cor-fundo-base);
+  color: var(--cor-texto-destaque);
+  font-family: 'Montserrat', sans-serif;
+  line-height: 1.5;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.container {
+  width: 100%;
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+
+/* =========================================================
+   CABEÇALHO E NAVEGAÇÃO
+   ========================================================= */
+.cabecalho {
+  border-bottom: 1px solid rgba(245, 158, 11, 0.25);
+  padding: 1.5rem 0;
+}
+
+.cabecalho__conteudo {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.cabecalho__titulo {
+  font-family: 'Lora', serif;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--cor-texto-destaque);
+  letter-spacing: 0.3px;
+}
+
+.cabecalho__subtitulo {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.cabecalho__slogan {
+  margin-top: 0.35rem;
+  font-family: 'Lora', serif;
+  font-style: italic;
+  font-size: 0.92rem;
+  color: rgba(245, 158, 11, 0.72);
+  border-bottom: 1px dashed rgba(245, 158, 11, 0.35);
+  display: inline-block;
+  padding: 0.1rem 0.25rem;
+  outline: none;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.cabecalho__slogan:focus {
+  color: var(--cor-texto-destaque);
+  border-bottom-color: var(--cor-texto-destaque);
+  background-color: rgba(255, 241, 242, 0.08);
+  border-radius: 4px;
+}
+
+.navegacao {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.navegacao__aba {
+  background-color: transparent;
+  color: var(--cor-texto-destaque);
+  border: 1.5px solid var(--cor-texto-destaque);
+  padding: 0.6rem 1.1rem;
+  border-radius: 8px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.navegacao__aba:hover {
+  background-color: rgba(245, 158, 11, 0.14);
+}
+
+.navegacao__aba--ativa {
+  background-color: var(--cor-texto-destaque);
+  color: var(--cor-fundo-base);
+}
+
+/* =========================================================
+   CONTEÚDO PRINCIPAL E CONTROLE DE ABAS
+   ========================================================= */
+.principal {
+  flex: 1;
+  padding-top: 1.75rem;
+  padding-bottom: 3rem;
+}
+
+.secao-aba {
+  display: none;
+}
+
+.secao-aba--ativa {
+  display: block;
+}
+
+/* =========================================================
+   FILTROS DE STATUS
+   ========================================================= */
+.barra-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem;
+  margin-bottom: 1.5rem;
+}
+
+.barra-filtros__rotulo {
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin-right: 0.25rem;
+  color: var(--cor-texto-destaque);
+}
+
+.filtro-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background-color: rgba(250, 247, 242, 0.1);
+  color: var(--cor-texto-destaque);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  padding: 0.42rem 0.85rem;
+  border-radius: 999px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filtro-btn:hover {
+  background-color: rgba(250, 247, 242, 0.18);
+}
+
+.filtro-btn--ativo {
+  background-color: var(--cor-bloco-claro);
+  color: var(--cor-fundo-base);
+  border-color: var(--cor-bloco-claro);
+}
+
+.bolinha {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+.bolinha--vermelha { background-color: var(--status-fazer); }
+.bolinha--amarela  { background-color: var(--status-andamento); }
+.bolinha--verde    { background-color: var(--status-concluida); }
+
+/* =========================================================
+   GRADE DAS 4 COLUNAS (MOBILE-FIRST -> TABLET -> DESKTOP)
+   ========================================================= */
+.grade-colunas {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+/* Estilo Bloquinho de Notas Editorial */
+.bloquinho {
+  background-color: var(--cor-bloco-claro);
+  color: var(--cor-texto-escuro);
+  border-radius: 12px;
+  border-top: 10px solid var(--cor-acento-rosa);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
+  padding: 1.2rem 1.1rem;
+  position: relative;
+}
+
+.bloquinho:nth-child(even) {
+  background-color: var(--cor-bloco-rosado);
+  border-top-color: var(--cor-texto-destaque);
+}
+
+.bloquinho__cabecalho {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 0.75rem;
+  margin-bottom: 0.85rem;
+  border-bottom: 2px dashed var(--cor-borda-papel);
+}
+
+.bloquinho__titulo {
+  font-family: 'Lora', serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--cor-fundo-base);
+}
+
+.bloquinho__contador {
+  font-size: 0.78rem;
+  font-weight: 700;
+  background-color: var(--cor-fundo-base);
+  color: var(--cor-texto-destaque);
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+}
+
+/* Lista de tarefas pautada como bloco de notas */
+.lista-tarefas {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  margin-bottom: 1rem;
+}
+
+.tarefa-item {
+  background-color: #FFFFFF;
+  border: 1px solid var(--cor-borda-papel);
+  border-radius: 8px;
+  padding: 0.7rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.tarefa-item:hover {
+  box-shadow: 0 3px 10px rgba(54, 19, 38, 0.08);
+}
+
+.tarefa-item__topo {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.tarefa-item__texto {
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: var(--cor-texto-escuro);
+  word-break: break-word;
+}
+
+/* Efeito riscado quando concluída */
+.tarefa-item--concluida .tarefa-item__texto {
+  text-decoration: line-through;
+  color: #7A6872;
+  opacity: 0.85;
+}
+
+.tarefa-item__remover {
+  background: none;
+  border: none;
+  color: #9E8A95;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0.1rem 0.25rem;
+  border-radius: 4px;
+}
+
+.tarefa-item__remover:hover {
+  color: var(--cor-acento-rosa);
+  background-color: var(--cor-bloco-rosado);
+}
+
+/* Caixinhas de status individuais */
+.status-opcoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.status-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.32rem;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.28rem 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #DCD0C8;
+  background-color: #FAF7F2;
+  color: var(--cor-texto-suave);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.status-btn__caixa {
+  width: 11px;
+  height: 11px;
+  border-radius: 3px;
+  display: inline-block;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.status-btn[data-status="para-fazer"] .status-btn__caixa {
+  background-color: var(--status-fazer);
+}
+
+.status-btn[data-status="em-andamento"] .status-btn__caixa {
+  background-color: var(--status-andamento);
+}
+
+.status-btn[data-status="concluida"] .status-btn__caixa {
+  background-color: var(--status-concluida);
+}
+
+/* Estado ativo da caixinha selecionada */
+.status-btn--ativo[data-status="para-fazer"] {
+  background-color: #FFE4E6;
+  border-color: var(--status-fazer);
+  color: #9F1239;
+}
+
+.status-btn--ativo[data-status="em-andamento"] {
+  background-color: #FEF3C7;
+  border-color: var(--status-andamento);
+  color: #92400E;
+}
+
+.status-btn--ativo[data-status="concluida"] {
+  background-color: #DCFCE7;
+  border-color: var(--status-concluida);
+  color: #166534;
+}
+
+.lista-vazia {
+  font-size: 0.85rem;
+  color: var(--cor-texto-suave);
+  font-style: italic;
+  text-align: center;
+  padding: 0.75rem 0;
+}
+
+/* Formulário de nova tarefa dentro do bloquinho */
+.form-nova-tarefa {
+  display: flex;
+  gap: 0.45rem;
+  padding-top: 0.65rem;
+  border-top: 1px dashed var(--cor-borda-papel);
+}
+
+.form-nova-tarefa__input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.55rem 0.7rem;
+  border: 1.5px solid #D6C7BD;
+  border-radius: 8px;
+  background-color: #FFFFFF;
+  color: var(--cor-texto-escuro);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.85rem;
+}
+
+.form-nova-tarefa__input:focus {
+  outline: none;
+  border-color: var(--cor-acento-rosa);
+}
+
+.form-nova-tarefa__btn {
+  background-color: var(--cor-fundo-base);
+  color: var(--cor-texto-destaque);
+  border: none;
+  border-radius: 8px;
+  padding: 0 0.85rem;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.form-nova-tarefa__btn:hover {
+  opacity: 0.9;
+}
+
+/* =========================================================
+   ABA 2: OBRAS A SEREM AVALIADAS
+   ========================================================= */
+.obras-topo {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(245, 158, 11, 0.25);
+}
+
+.obras-topo__titulo {
+  font-family: 'Lora', serif;
+  font-size: 1.55rem;
+  color: var(--cor-texto-destaque);
+}
+
+.obras-topo__descricao {
+  font-size: 0.9rem;
+  color: rgba(245, 158, 11, 0.85);
+}
+
+.btn-primario {
+  align-self: flex-start;
+  background-color: var(--cor-acento-rosa);
+  color: #FFF1F2;
+  border: none;
+  padding: 0.7rem 1.2rem;
+  border-radius: 8px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(225, 29, 72, 0.35);
+  transition: transform 0.15s ease, background-color 0.2s;
+}
+
+.btn-primario:hover {
+  background-color: #BE123C;
+  transform: translateY(-1px);
+}
+
+.grade-obras {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+
+.card-obra {
+  background-color: var(--cor-bloco-claro);
+  color: var(--cor-texto-escuro);
+  border-radius: 12px;
+  border-left: 8px solid var(--cor-acento-rosa);
+  padding: 1.25rem;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.card-obra__topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px dashed var(--cor-borda-papel);
+  padding-bottom: 0.5rem;
+}
+
+.card-obra__numero {
+  font-family: 'Lora', serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--cor-fundo-base);
+}
+
+.card-obra__excluir {
+  background: none;
+  border: 1px solid #E2D4CB;
+  color: var(--cor-texto-suave);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.card-obra__excluir:hover {
+  background-color: var(--cor-bloco-rosado);
+  color: var(--cor-acento-rosa);
+  border-color: var(--cor-acento-rosa);
+}
+
+.campo-grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.campo-grupo label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--cor-fundo-base);
+}
+
+.campo-grupo input,
+.campo-grupo textarea {
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  border: 1.5px solid #D6C7BD;
+  border-radius: 8px;
+  background-color: #FFFFFF;
+  color: var(--cor-texto-escuro);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.88rem;
+}
+
+.campo-grupo input:focus,
+.campo-grupo textarea:focus {
+  outline: none;
+  border-color: var(--cor-acento-rosa);
+}
+
+.campo-grupo textarea {
+  resize: vertical;
+  min-height: 76px;
+}
+
+.linha-link {
+  display: flex;
+  gap: 0.5rem;
+  align-items: stretch;
+}
+
+.btn-abrir-obra {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  background-color: var(--cor-fundo-base);
+  color: var(--cor-texto-destaque);
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 0 0.85rem;
+  border-radius: 8px;
+  transition: opacity 0.2s;
+}
+
+.btn-abrir-obra:hover {
+  opacity: 0.9;
+}
+
+.btn-abrir-obra--desabilitado {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+/* =========================================================
+   RODAPÉ
+   ========================================================= */
+.rodape {
+  border-top: 1px solid rgba(245, 158, 11, 0.2);
+  padding: 1.1rem 0;
+  text-align: center;
+  font-size: 0.8rem;
+  color: rgba(245, 158, 11, 0.75);
+}
+
+/* =========================================================
+   MEDIA QUERIES (TABLETS E COMPUTADORES)
+   ========================================================= */
+@media (min-width: 720px) {
+  .cabecalho__conteudo {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .obras-topo {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .grade-colunas {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .grade-obras {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1120px) {
+  .grade-colunas {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

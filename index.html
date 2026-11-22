@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Saruê Livros | Lista de Tarefas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,600;0,700;1,400&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/estilo.css">
+</head>
+<body>
+
+  <header class="cabecalho">
+    <div class="container cabecalho__conteudo">
+      <div class="cabecalho__marca">
+        <h1 class="cabecalho__titulo">Saruê Livros <span class="cabecalho__subtitulo">(Lista de Tarefas)</span></h1>
+        <!-- Espaço discreto e editável para o slogan da editora -->
+        <p class="cabecalho__slogan" id="slogan-editora" contenteditable="true" title="Clique para editar o slogan">
+          Espaço reservado para o slogan da Saruê Livros...
+        </p>
+      </div>
+
+      <nav class="navegacao" aria-label="Navegação principal">
+        <button type="button" class="navegacao__aba navegacao__aba--ativa" data-aba="tarefas">
+          Tarefas da Equipe
+        </button>
+        <button type="button" class="navegacao__aba" data-aba="obras">
+          Obras a serem avaliadas
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container principal">
+
+    <!-- ABA 1: 4 COLUNAS DE TAREFAS -->
+    <section id="aba-tarefas" class="secao-aba secao-aba--ativa">
+      <div class="barra-filtros" role="group" aria-label="Filtrar tarefas por status">
+        <span class="barra-filtros__rotulo">Filtrar por:</span>
+        <button type="button" class="filtro-btn filtro-btn--ativo" data-filtro="todas">Todas</button>
+        <button type="button" class="filtro-btn" data-filtro="para-fazer">
+          <span class="bolinha bolinha--vermelha"></span> Para fazer
+        </button>
+        <button type="button" class="filtro-btn" data-filtro="em-andamento">
+          <span class="bolinha bolinha--amarela"></span> Em andamento
+        </button>
+        <button type="button" class="filtro-btn" data-filtro="concluida">
+          <span class="bolinha bolinha--verde"></span> Concluídas
+        </button>
+      </div>
+
+      <div class="grade-colunas" id="grade-colunas">
+        <!-- As 4 colunas (Bruna, Gabi, Natália e Rafael) são renderizadas via js/script.js -->
+      </div>
+    </section>
+
+    <!-- ABA 2: OBRAS A SEREM AVALIADAS -->
+    <section id="aba-obras" class="secao-aba">
+      <div class="obras-topo">
+        <div>
+          <h2 class="obras-topo__titulo">Obras a serem avaliadas</h2>
+          <p class="obras-topo__descricao">
+            Adicione originais, fanfics ou manuscritos para leitura e parecer editorial da equipe.
+          </p>
+        </div>
+        <button type="button" id="btn-adicionar-obra" class="btn-primario">
+          + Adicionar obra
+        </button>
+      </div>
+
+      <div class="grade-obras" id="grade-obras">
+        <!-- Os cards multiplicáveis de obras são renderizados via js/script.js -->
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="rodape">
+    <div class="container">
+      <p>Saruê Livros &bull; Organização Editorial &bull; Alterações salvas automaticamente neste navegador</p>
+    </div>
+  </footer>
+
+  <script src="js/script.js"></script>
+</body>
+</html>
