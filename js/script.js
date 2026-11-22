@@ -9,9 +9,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const nuvemConfigurada =
     SUPABASE_URL.startsWith('https://') &&
-    !SUPABASE_URL.includes('COLE_AQUI') &&
-    SUPABASE_ANON_KEY.length > 15 &&
-    !SUPABASE_ANON_KEY.includes('COLE_AQUI');
+    SUPABASE_ANON_KEY.length > 15;
 
   // Dados iniciais solicitados (todas as tarefas começam como "para-fazer")
   const estadoInicial = {
@@ -112,12 +110,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   function montarHeadersSupabase(incluirJson = false) {
     const headers = {
-      apikey: SUPABASE_ANON_KEY
+      apikey: SUPABASE_ANON_KEY.trim()
     };
-
-    if (SUPABASE_ANON_KEY.startsWith('eyJ')) {
-      headers.Authorization = `Bearer ${SUPABASE_ANON_KEY}`;
-    }
 
     if (incluirJson) {
       headers['Content-Type'] = 'application/json';
@@ -131,7 +125,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!nuvemConfigurada) {
       const local = carregarBackupLocal();
       if (local) estado = local;
-      atualizarRodape('Saruê Livros • Modo local (cole sua chave do Supabase no js/script.js para sincronizar a equipe)');
+      atualizarRodape('Saruê Livros • Modo local (configure sua chave do Supabase no js/script.js)');
       return;
     }
 
@@ -144,7 +138,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
 
       if (!resposta.ok) {
-        throw new Error(`HTTP ${resposta.status}`);
+        const detalhe = await resposta.text();
+        throw new Error(`HTTP ${resposta.status} - ${detalhe}`);
       }
 
       const linhas = await resposta.json();
@@ -183,7 +178,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
 
       if (!resposta.ok) {
-        throw new Error(`HTTP ${resposta.status}`);
+        const detalhe = await resposta.text();
+        throw new Error(`HTTP ${resposta.status} - ${detalhe}`);
       }
 
       atualizarRodape('Saruê Livros • Alterações salvas na nuvem para toda a equipe');
